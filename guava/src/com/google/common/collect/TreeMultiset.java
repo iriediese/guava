@@ -27,10 +27,8 @@ import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Ints;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+
+import java.io.*;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -283,7 +281,7 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
         return 0;
       }
       newRoot = root.remove(comparator(), e, occurrences, result);
-    } catch (ClassCastException | NullPointerException e) {
+    } catch (ClassCastException | NullPointerException | IOException e) {
       return 0;
     }
     rootReference.checkAndSet(root, newRoot);
@@ -662,11 +660,20 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
       return this;
     }
 
-    AvlNode<E> remove(Comparator<? super E> comparator, @Nullable E e, int count, int[] result) {
+    AvlNode<E> remove(Comparator<? super E> comparator, @Nullable E e, int count, int[] result) throws IOException {
+      //init the br
+      boolean b[] = new boolean[14];
+      for (int i = 0; i < b.length; i++) {
+        b[i] = false;
+      }
       int cmp = comparator.compare(e, elem);
+      b[0] = true;
       if (cmp < 0) {
+        b[1] = true;
         AvlNode<E> initLeft = left;
         if (initLeft == null) {
+          b[2] = true;
+          writeRead(b);
           result[0] = 0;
           return this;
         }
@@ -674,17 +681,23 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
         left = initLeft.remove(comparator, e, count, result);
 
         if (result[0] > 0) {
+          b[3] = true;
           if (count >= result[0]) {
+            b[4] = true;
             this.distinctElements--;
             this.totalCount -= result[0];
           } else {
+            b[5] = true;
             this.totalCount -= count;
           }
         }
         return (result[0] == 0) ? this : rebalance();
       } else if (cmp > 0) {
+        b[6] = true;
         AvlNode<E> initRight = right;
         if (initRight == null) {
+          b[7] = true;
+          writeRead(b);
           result[0] = 0;
           return this;
         }
@@ -692,25 +705,65 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
         right = initRight.remove(comparator, e, count, result);
 
         if (result[0] > 0) {
+          b[8] = true;
+          writeRead(b);
           if (count >= result[0]) {
+            b[9] = true;
+            writeRead(b);
             this.distinctElements--;
             this.totalCount -= result[0];
           } else {
+            b[10] = true;
+            writeRead(b);
             this.totalCount -= count;
           }
         }
         return rebalance();
       }
-
+      b[11] = true;
       // removing count from me!
       result[0] = elemCount;
       if (count >= elemCount) {
+        b[12] = true;
+        writeRead(b);
         return deleteMe();
       } else {
+        b[13] = true;
+        writeRead(b);
         this.elemCount -= count;
         this.totalCount -= count;
         return this;
       }
+    }
+
+    public void writeRead(boolean[] b) throws IOException {
+      String filePath = "BooleanBranch.txt";
+      File file = new File(filePath);
+      BufferedWriter writer;
+      if (!file.exists()) {
+        System.out.println("does not exist!");
+
+        writer = new BufferedWriter(new FileWriter(filePath));
+        writer.write("00000000000000");
+
+        writer.close();
+      }
+      FileReader reader = new FileReader(filePath);
+      int[] iArr = new int[b.length];
+      String s = "";
+      for (int i = 0; i < b.length; i++) {
+        iArr[i] = reader.read();
+        if ((iArr[i] == 48 && b[i] == true) || (iArr[i] == 49 && b[i] == true) || (iArr[i] == 49 && b[i] == false)) {
+          s = s + "1"; //dont do this at home
+        } else {
+          s = s + "0";
+        }
+      }
+      System.out.println(s);
+      writer = new BufferedWriter(new FileWriter(filePath));
+
+      writer.write(s);
+      writer.close();
     }
 
     AvlNode<E> setCount(Comparator<? super E> comparator, @Nullable E e, int count, int[] result) {
