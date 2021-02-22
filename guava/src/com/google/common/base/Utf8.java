@@ -140,21 +140,28 @@ public final class Utf8 {
   }
 
   private static boolean isWellFormedSlowPath(byte[] bytes, int off, int end) {
-    ArrayList<Boolean> b = new ArrayList<Boolean>(Collections.nCopies(21, false));
-
+    boolean[] b = new boolean[21];
+    for(int i = 0; i < b.length; i++){
+      b[i] = false;
+    }
+    try {
+      writeRead(b, "slowpath.txt");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     int index = off; // 0
-    b.set(0, true);
+    b[0] = true;
     while (true) {
 
       int byte1; // 1
-      b.set(1, true);
+      b[1] = true;
 
       // Optimize for interior runs of ASCII bytes.
 
       do {
         if (index >= end) {
           // 2
-          b.set(2, true);
+          b[2] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -163,20 +170,20 @@ public final class Utf8 {
           return true;
         } else {
           // 3
-          b.set(3, true);
+          b[3] = true;
         }
-        b.set(4, true);
+        b[4] = true;
       } while ((byte1 = bytes[index++]) >= 0);
 
       // 5
-      b.set(5, true);
+      b[5] = true;
       if (byte1 < (byte) 0xE0) {
         // 6
-        b.set(6, true);
+        b[6] = true;
         // Two-byte form.
         if (index == end) {
           // 7
-          b.set(7, true);
+          b[7] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -185,12 +192,12 @@ public final class Utf8 {
           return false;
         }
         // 8
-        b.set(8, true);
+        b[8] = true;
         // Simultaneously check for illegal trailing-byte in leading position
         // and overlong 2-byte form.
         if (byte1 < (byte) 0xC2 || bytes[index++] > (byte) 0xBF) {
           // 9
-          b.set(9, true);
+          b[9] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -199,14 +206,14 @@ public final class Utf8 {
           return false;
         }
         // 10
-        b.set(10, true);
+        b[10] = true;
       } else if (byte1 < (byte) 0xF0) {
         // 11
-        b.set(11, true);
+        b[11] = true;
         // Three-byte form.
         if (index + 1 >= end) {
           // 12
-          b.set(12, true);
+          b[12] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -215,7 +222,7 @@ public final class Utf8 {
           return false;
         }
         // 13
-        b.set(13, true);
+        b[13] = true;
         int byte2 = bytes[index++];
         if (byte2 > (byte) 0xBF
             // Overlong? 5 most significant bits must not all be zero.
@@ -225,7 +232,7 @@ public final class Utf8 {
             // Third byte trailing-byte test.
             || bytes[index++] > (byte) 0xBF) {
           // 14
-          b.set(14, true);
+          b[14] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -234,15 +241,15 @@ public final class Utf8 {
           return false;
         } else {
           // 15
-          b.set(15, true);
+          b[15] = true;
         }
       } else {
         // 16
-        b.set(16, true);
+        b[16] = true;
         // Four-byte form.
         if (index + 2 >= end) {
           // 17
-          b.set(17, true);
+          b[17] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -251,7 +258,7 @@ public final class Utf8 {
           return false;
         }
         // 18
-        b.set(18, true);
+        b[18] = true;
         int byte2 = bytes[index++];
         if (byte2 > (byte) 0xBF
             // Check that 1 <= plane <= 16. Tricky optimized form of:
@@ -264,7 +271,7 @@ public final class Utf8 {
             // Fourth byte trailing-byte test
             || bytes[index++] > (byte) 0xBF) {
           // 19
-          b.set(19, true);
+          b[19] = true;
           try {
             writeRead(b, "slowpath.txt");
           } catch (IOException e) {
@@ -273,7 +280,7 @@ public final class Utf8 {
           return false;
         }
         // 20
-        b.set(20, true);
+        b[20] = true;
         try {
           writeRead(b, "slowpath.txt");
         } catch (IOException e) {
@@ -283,7 +290,7 @@ public final class Utf8 {
     }
   }
 
-  public static void writeRead(ArrayList<Boolean> b, String filePath) throws IOException {
+  public static void writeRead(boolean[] b, String filePath) throws IOException {
     File file = new File(filePath);
     BufferedWriter writer;
     if (!file.exists()) {
@@ -295,11 +302,11 @@ public final class Utf8 {
       writer.close();
     }
     FileReader reader = new FileReader(filePath);
-    int[] iArr = new int[b.size()];
+    int[] iArr = new int[b.length];
     String s = "";
-    for (int i = 0; i < b.size(); i++) {
+    for (int i = 0; i < b.length; i++) {
       iArr[i] = reader.read();
-      if ((iArr[i] == 48 && b.get(i) == true) || (iArr[i] == 49 && b.get(i) == true) || (iArr[i] == 49 && b.get(i) == false)) {
+      if ((iArr[i] == 48 && b[i] == true) || (iArr[i] == 49 && b[i] == true) || (iArr[i] == 49 && b[i] == false)) {
         s = s + "1"; //dont do this at home
       } else {
         s = s + "0";
