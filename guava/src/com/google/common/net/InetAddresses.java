@@ -24,6 +24,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
+
+import java.io.*;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -205,6 +207,7 @@ public final class InetAddresses {
   }
 
   private static byte @Nullable [] textToNumericFormatV4(String ipString) {
+
     if (IPV4_DELIMITER_MATCHER.countIn(ipString) + 1 != IPV4_PART_COUNT) {
       return null; // Wrong number of parts
     }
@@ -231,40 +234,143 @@ public final class InetAddresses {
 
   private static byte @Nullable [] textToNumericFormatV6(String ipString) {
     // An address can have [2..8] colons.
+    boolean[] flags = new boolean[25]; // keeps track of flags reached
+    for (int i = 0; i < flags.length; i++) {
+      flags[i] = false;
+    }
+    flags[0] = true;
+    try {
+      writeRead(flags);
+    } catch (IOException e) {
+
+    }
     int delimiterCount = IPV6_DELIMITER_MATCHER.countIn(ipString);
     if (delimiterCount < 2 || delimiterCount > IPV6_PART_COUNT) {
+      flags[1] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+      // write to file since we got return
       return null;
+    }
+    flags[2] = true;
+    try {
+      writeRead(flags);
+    } catch (IOException e) {
+
     }
     int partsSkipped = IPV6_PART_COUNT - (delimiterCount + 1); // estimate; may be modified later
     boolean hasSkip = false;
     // Scan for the appearance of ::, to mark a skip-format IPV6 string and adjust the partsSkipped
     // estimate.
     for (int i = 0; i < ipString.length() - 1; i++) {
+      flags[3] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
       if (ipString.charAt(i) == IPV6_DELIMITER && ipString.charAt(i + 1) == IPV6_DELIMITER) {
         if (hasSkip) {
+          flags[4] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
+          //add write to file since return
           return null; // Can't have more than one ::
+        }
+        flags[5] = true;
+        try {
+          writeRead(flags);
+        } catch (IOException e) {
+
         }
         hasSkip = true;
         partsSkipped++; // :: means we skipped an extra part in between the two delimiters.
         if (i == 0) {
+          flags[6] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
           partsSkipped++; // Begins with ::, so we skipped the part preceding the first :
+        } else {
+          flags[7] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
         }
         if (i == ipString.length() - 2) {
+          flags[8] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
           partsSkipped++; // Ends with ::, so we skipped the part after the last :
+        } else {
+          flags[9] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
+        }
+      } else {
+        flags[10] = true;
+        try {
+          writeRead(flags);
+        } catch (IOException e) {
+
         }
       }
     }
     if (ipString.charAt(0) == IPV6_DELIMITER && ipString.charAt(1) != IPV6_DELIMITER) {
+      flags[11] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+      // write to file since return
       return null; // ^: requires ^::
     }
     if (ipString.charAt(ipString.length() - 1) == IPV6_DELIMITER
         && ipString.charAt(ipString.length() - 2) != IPV6_DELIMITER) {
+      flags[12] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+      // write to file since return
       return null; // :$ requires ::$
     }
     if (hasSkip && partsSkipped <= 0) {
+      flags[13] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+      // write to file since return
       return null; // :: must expand to at least one '0'
     }
     if (!hasSkip && delimiterCount + 1 != IPV6_PART_COUNT) {
+      flags[14] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+      // write to file since return
       return null; // Incorrect number of parts
     }
 
@@ -273,22 +379,79 @@ public final class InetAddresses {
       // Iterate through the parts of the ip string.
       // Invariant: start is always the beginning of a hextet, or the second ':' of the skip
       // sequence "::"
+      flags[15] = true;
+      try {
+        writeRead(flags);
+      } catch (IOException e) {
+
+      }
+
       int start = 0;
       if (ipString.charAt(0) == IPV6_DELIMITER) {
+        flags[16] = true;
+        try {
+          writeRead(flags);
+        } catch (IOException e) {
+
+        }
         start = 1;
+      } else {
+        flags[17] = true;
+        try {
+          writeRead(flags);
+        } catch (IOException e) {
+
+        }
       }
       while (start < ipString.length()) {
+        flags[18] = true;
+        try {
+          writeRead(flags);
+        } catch (IOException e) {
+
+        }
         int end = ipString.indexOf(IPV6_DELIMITER, start);
         if (end == -1) {
+          flags[19] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
           end = ipString.length();
+        } else {
+          flags[20] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
         }
         if (ipString.charAt(start) == IPV6_DELIMITER) {
           // expand zeroes
+          flags[21] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
           for (int i = 0; i < partsSkipped; i++) {
+            flags[22] = true;
+            try {
+              writeRead(flags);
+            } catch (IOException e) {
+
+            }
             rawBytes.putShort((short) 0);
           }
 
         } else {
+          flags[23] = true;
+          try {
+            writeRead(flags);
+          } catch (IOException e) {
+
+          }
           rawBytes.putShort(parseHextet(ipString, start, end));
         }
         start = end + 1;
@@ -296,7 +459,47 @@ public final class InetAddresses {
     } catch (NumberFormatException ex) {
       return null;
     }
+    flags[24] = true;
+    try {
+      writeRead(flags);
+    } catch (IOException e) {
+
+    }
     return rawBytes.array();
+  }
+
+  public static void writeRead(boolean[] b) throws IOException {
+    /**
+     * credit to johennin for this beautiful function
+     * modified by Nihm to work with this class.
+     */
+    String filePath = "Coverage.txt";
+    File file = new File(filePath);
+    BufferedWriter writer;
+    if (!file.exists()) {
+      System.out.println("does not exist!");
+
+      writer = new BufferedWriter(new FileWriter(filePath));
+      writer.write("0000000000000000000000000");
+
+      writer.close();
+    }
+    FileReader reader = new FileReader(filePath);
+    int[] iArr = new int[b.length];
+    String s = "";
+    for (int i = 0; i < b.length; i++) {
+      iArr[i] = reader.read();
+      if ((iArr[i] == 48 && b[i] == true) || (iArr[i] == 49 && b[i] == true) || (iArr[i] == 49 && b[i] == false)) {
+        s = s + "1"; //dont do this at home
+      } else {
+        s = s + "0";
+      }
+    }
+    System.out.println(s);
+    writer = new BufferedWriter(new FileWriter(filePath));
+
+    writer.write(s);
+    writer.close();
   }
 
   private static @Nullable String convertDottedQuadToHex(String ipString) {
