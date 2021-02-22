@@ -305,8 +305,13 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
       return 0;
     }
     int[] result = new int[1]; // used as a mutable int reference to hold result
-    AvlNode<E> newRoot = root.setCount(comparator(), element, count, result);
-    rootReference.checkAndSet(root, newRoot);
+    try {
+      AvlNode<E> newRoot = root.setCount(comparator(), element, count, result);
+      rootReference.checkAndSet(root, newRoot);
+    } catch (IOException e) {
+
+    }
+
     return result[0];
   }
 
@@ -766,11 +771,20 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
       writer.close();
     }
 
-    AvlNode<E> setCount(Comparator<? super E> comparator, @Nullable E e, int count, int[] result) {
+    AvlNode<E> setCount(Comparator<? super E> comparator, @Nullable E e, int count, int[] result) throws  IOException {
+      boolean[] flags = new boolean[10]; //initiate flag counter
+      for (int i = 0; i < flags.length; i++)
+        flags[i] = false;
+
+
       int cmp = comparator.compare(e, elem);
+      flags[0] = true;
       if (cmp < 0) {
+        flags[1] = true;
         AvlNode<E> initLeft = left;
         if (initLeft == null) {
+          flags[2] = true;
+          writeRead(flags);
           result[0] = 0;
           return (count > 0) ? addLeftChild(e, count) : this;
         }
@@ -778,16 +792,21 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
         left = initLeft.setCount(comparator, e, count, result);
 
         if (count == 0 && result[0] != 0) {
+          flags[3] = true;
           this.distinctElements--;
         } else if (count > 0 && result[0] == 0) {
+          flags[4] = true;
           this.distinctElements++;
         }
-
+        writeRead(flags);
         this.totalCount += count - result[0];
         return rebalance();
       } else if (cmp > 0) {
+        flags[5] = true;
         AvlNode<E> initRight = right;
         if (initRight == null) {
+          flags[6] = true;
+          writeRead(flags);
           result[0] = 0;
           return (count > 0) ? addRightChild(e, count) : this;
         }
@@ -795,11 +814,13 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
         right = initRight.setCount(comparator, e, count, result);
 
         if (count == 0 && result[0] != 0) {
+          flags[7] = true;
           this.distinctElements--;
         } else if (count > 0 && result[0] == 0) {
+          flags[8] = true;
           this.distinctElements++;
         }
-
+        writeRead(flags);
         this.totalCount += count - result[0];
         return rebalance();
       }
@@ -807,8 +828,11 @@ public final class TreeMultiset<E> extends AbstractSortedMultiset<E> implements 
       // setting my count
       result[0] = elemCount;
       if (count == 0) {
+        flags[9] = true;
+        writeRead(flags);
         return deleteMe();
       }
+      writeRead(flags);
       this.totalCount += count - elemCount;
       this.elemCount = count;
       return this;
