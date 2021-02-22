@@ -235,38 +235,9 @@ public final class InetAddresses {
     if (delimiterCount < 2 || delimiterCount > IPV6_PART_COUNT) {
       return null;
     }
-    int partsSkipped = IPV6_PART_COUNT - (delimiterCount + 1); // estimate; may be modified later
-    boolean hasSkip = false;
-    // Scan for the appearance of ::, to mark a skip-format IPV6 string and adjust the partsSkipped
-    // estimate.
-    for (int i = 0; i < ipString.length() - 1; i++) {
-      if (ipString.charAt(i) == IPV6_DELIMITER && ipString.charAt(i + 1) == IPV6_DELIMITER) {
-        if (hasSkip) {
-          return null; // Can't have more than one ::
-        }
-        hasSkip = true;
-        partsSkipped++; // :: means we skipped an extra part in between the two delimiters.
-        if (i == 0) {
-          partsSkipped++; // Begins with ::, so we skipped the part preceding the first :
-        }
-        if (i == ipString.length() - 2) {
-          partsSkipped++; // Ends with ::, so we skipped the part after the last :
-        }
-      }
-    }
-    if (ipString.charAt(0) == IPV6_DELIMITER && ipString.charAt(1) != IPV6_DELIMITER) {
-      return null; // ^: requires ^::
-    }
-    if (ipString.charAt(ipString.length() - 1) == IPV6_DELIMITER
-        && ipString.charAt(ipString.length() - 2) != IPV6_DELIMITER) {
-      return null; // :$ requires ::$
-    }
-    if (hasSkip && partsSkipped <= 0) {
-      return null; // :: must expand to at least one '0'
-    }
-    if (!hasSkip && delimiterCount + 1 != IPV6_PART_COUNT) {
-      return null; // Incorrect number of parts
-    }
+    int[] skipped = scanForDelimiter(ipString, delimiterCount);
+    if (skipped == null) return null;
+    int partsSkipped = skipped[0];
 
     ByteBuffer rawBytes = ByteBuffer.allocate(2 * IPV6_PART_COUNT);
     try {
@@ -297,6 +268,44 @@ public final class InetAddresses {
       return null;
     }
     return rawBytes.array();
+  }
+
+  private static int @Nullable [] scanForDelimiter(String ipString, int delimiterCount) {
+
+    int partsSkipped = IPV6_PART_COUNT - (delimiterCount + 1); // estimate; may be modified later
+    boolean hasSkip = false;
+    for (int i = 0; i < ipString.length() - 1; i++) {
+      if (ipString.charAt(i) == IPV6_DELIMITER && ipString.charAt(i + 1) == IPV6_DELIMITER) {
+        if (hasSkip) {
+          return null; // Can't have more than one ::
+        }
+        hasSkip = true;
+        partsSkipped++; // :: means we skipped an extra part in between the two delimiters.
+        if (i == 0) {
+          partsSkipped++; // Begins with ::, so we skipped the part preceding the first :
+        }
+        if (i == ipString.length() - 2) {
+          partsSkipped++; // Ends with ::, so we skipped the part after the last :
+        }
+      }
+    }
+
+    if (ipString.charAt(0) == IPV6_DELIMITER && ipString.charAt(1) != IPV6_DELIMITER) {
+      return null; // ^: requires ^::
+    }
+    if (ipString.charAt(ipString.length() - 1) == IPV6_DELIMITER
+            && ipString.charAt(ipString.length() - 2) != IPV6_DELIMITER) {
+      return null; // :$ requires ::$
+    }
+    if (hasSkip && partsSkipped <= 0) {
+      return null; // :: must expand to at least one '0'
+    }
+    if (!hasSkip && delimiterCount + 1 != IPV6_PART_COUNT) {
+      return null; // Incorrect number of parts
+    }
+    int[] skipped = new int[1];
+    skipped[0] = partsSkipped;
+    return skipped;
   }
 
   private static @Nullable String convertDottedQuadToHex(String ipString) {
