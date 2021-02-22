@@ -21,7 +21,8 @@ import static com.google.common.collect.BoundType.OPEN;
 
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.base.Objects;
-import java.io.Serializable;
+
+import java.io.*;
 import java.util.Comparator;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -173,51 +174,130 @@ final class GeneralRange<T> implements Serializable {
    * Returns the intersection of the two ranges, or an empty range if their intersection is empty.
    */
   GeneralRange<T> intersect(GeneralRange<T> other) {
-    checkNotNull(other);
-    checkArgument(comparator.equals(other.comparator));
+    //manual instrumentation for branch coverage
 
+    //coverage boolean array
+    boolean[] cov = new boolean[20];
+
+    cov[0] = true;
+    try {
+      writeRead(cov, "intersect.txt");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    checkNotNull(other);
+    cov[1] = true;
+    try {
+      writeRead(cov, "intersect.txt");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    checkArgument(comparator.equals(other.comparator));
+    cov[2] = true;
     boolean hasLowBound = this.hasLowerBound;
     @Nullable T lowEnd = getLowerEndpoint();
     BoundType lowType = getLowerBoundType();
+
     if (!hasLowerBound()) {
+      cov[3] = true;
       hasLowBound = other.hasLowerBound;
       lowEnd = other.getLowerEndpoint();
       lowType = other.getLowerBoundType();
-    } else if (other.hasLowerBound()) {
-      int cmp = comparator.compare(getLowerEndpoint(), other.getLowerEndpoint());
-      if (cmp < 0 || (cmp == 0 && other.getLowerBoundType() == OPEN)) {
-        lowEnd = other.getLowerEndpoint();
-        lowType = other.getLowerBoundType();
+    } else {
+      cov[4] = true;
+      if (other.hasLowerBound()) {
+        cov[5] = true;
+        int cmp = comparator.compare(getLowerEndpoint(), other.getLowerEndpoint());
+        if (cmp < 0 || (cmp == 0 && other.getLowerBoundType() == OPEN)) {
+          cov[6] = true;
+          lowEnd = other.getLowerEndpoint();
+          lowType = other.getLowerBoundType();
+        }
+        else{
+          cov[7] = true;
+        }
       }
     }
 
+    cov[8] = true;
     boolean hasUpBound = this.hasUpperBound;
     @Nullable T upEnd = getUpperEndpoint();
     BoundType upType = getUpperBoundType();
     if (!hasUpperBound()) {
+      cov[9] = true;
       hasUpBound = other.hasUpperBound;
       upEnd = other.getUpperEndpoint();
       upType = other.getUpperBoundType();
-    } else if (other.hasUpperBound()) {
-      int cmp = comparator.compare(getUpperEndpoint(), other.getUpperEndpoint());
-      if (cmp > 0 || (cmp == 0 && other.getUpperBoundType() == OPEN)) {
-        upEnd = other.getUpperEndpoint();
-        upType = other.getUpperBoundType();
+    } else{
+      cov[10] = true;
+      if (other.hasUpperBound()) {
+        cov[11] = true;
+        int cmp = comparator.compare(getUpperEndpoint(), other.getUpperEndpoint());
+        if (cmp > 0 || (cmp == 0 && other.getUpperBoundType() == OPEN)) {
+          cov[12] = true;
+          upEnd = other.getUpperEndpoint();
+          upType = other.getUpperBoundType();
+        }
+        else {
+          cov[13] = true;
+        }
       }
     }
 
+    cov[14] = true;
     if (hasLowBound && hasUpBound) {
+      cov[15] = true;
       int cmp = comparator.compare(lowEnd, upEnd);
       if (cmp > 0 || (cmp == 0 && lowType == OPEN && upType == OPEN)) {
+        cov[16] = true;
         // force allowed empty range
         lowEnd = upEnd;
         lowType = OPEN;
         upType = CLOSED;
+      } else {
+        cov[17] = true;
       }
+    } else {
+      cov[18] = true;
     }
 
+    cov[19] = true;
+    try {
+      writeRead(cov, "intersect.txt");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return new GeneralRange<T>(comparator, hasLowBound, lowEnd, lowType, hasUpBound, upEnd, upType);
   }
+
+    public void writeRead(boolean[] b, String filePath) throws IOException {
+        File file = new File(filePath);
+        BufferedWriter writer;
+        if (!file.exists()) {
+            System.out.println("does not exist!");
+
+            writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write("00000000000000000000");
+
+            writer.close();
+        }
+        FileReader reader = new FileReader(filePath);
+        int[] iArr = new int[b.length];
+        String s = "";
+        for (int i = 0; i < b.length; i++) {
+            iArr[i] = reader.read();
+            if ((iArr[i] == 48 && b[i]) || (iArr[i] == 49 && b[i]) || (iArr[i] == 49 && !b[i])) {
+                s = s + "1"; //dont do this at home
+            } else {
+                s = s + "0";
+            }
+        }
+        System.out.println(s);
+        writer = new BufferedWriter(new FileWriter(filePath));
+
+        writer.write(s);
+        writer.close();
+    }
 
   @Override
   public boolean equals(@Nullable Object obj) {
