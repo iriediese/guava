@@ -211,4 +211,11 @@ public class EvictingQueueTest extends TestCase {
     assertEquals("three", copy.remove());
     assertTrue(copy.isEmpty());
   }
+
+  public void testContains(){
+    EvictingQueue<String> sample = EvictingQueue.create(3);
+    sample.add("eh");
+    sample.add("ehh");
+    assertTrue(sample.contains("eh"));
+  }
 }

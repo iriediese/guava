@@ -51,4 +51,10 @@ public class CountTest extends TestCase {
     holder.set(20);
     assertEquals(20, holder.get());
   }
+
+  public void testEquals(){
+    Count c = new Count(3);
+    Count d = new Count(3);
+    assertTrue(c.equals(d));
+  }
 }

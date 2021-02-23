@@ -53,6 +53,12 @@ public class FinalizableReferenceQueueTest extends TestCase {
         });
   }
 
+  public void testCleanUp() {
+    final MockReference reference = new MockReference(frq = new FinalizableReferenceQueue());
+    frq.cleanUp();
+    assertNull(frq.queue.poll());
+  }
+
   static class MockReference extends FinalizableWeakReference<Object> {
 
     volatile boolean finalizeReferentCalled;
