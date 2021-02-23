@@ -28,6 +28,40 @@ public class LongAdderTest extends TestCase {
    */
   public void testNulls() {}
 
+  public void testReset() {
+    LongAdder longAdder = new LongAdder();
+    longAdder.add(Long.MAX_VALUE);
+    assertThat(longAdder.sum()).isEqualTo(Long.MAX_VALUE);
+
+    longAdder.reset();
+    assertThat(longAdder.sum()).isEqualTo(0L);
+  }
+
+  public void testAdd() {
+    LongAdder longAdder = new LongAdder();
+    longAdder.add(2L);
+    assertThat(longAdder.sum()).isEqualTo(2L);
+
+    longAdder.add(-1L);
+    assertThat(longAdder.sum()).isEqualTo(1L);
+  }
+
+  public void testSum() {
+    LongAdder longAdder = new LongAdder();
+    longAdder.add(Long.MAX_VALUE);
+    assertThat(longAdder.sum()).isEqualTo(Long.MAX_VALUE);
+
+  }
+
+  public void testSumThenReset() {
+    LongAdder longAdder = new LongAdder();
+    longAdder.add(Long.MAX_VALUE);
+    assertThat(longAdder.sum()).isEqualTo(Long.MAX_VALUE);
+
+    assertThat(longAdder.sumThenReset()).isEqualTo(Long.MAX_VALUE);
+    assertThat(longAdder.sum()).isEqualTo(0L);
+  }
+
   public void testOverflows() {
     LongAdder longAdder = new LongAdder();
     longAdder.add(Long.MAX_VALUE);
