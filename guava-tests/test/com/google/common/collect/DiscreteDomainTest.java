@@ -127,4 +127,38 @@ public class DiscreteDomainTest extends TestCase {
     BigInteger bigDist = BigInteger.valueOf(distance);
     assertEquals(bigDist, MAX_LONG);
   }
+
+  /**
+   * Checks if the Long next method returns an long number incremented by 1 for the numbers 1-10.
+   * Assertion is true if all 10 numbers are incremented correctly.
+   */
+  public void testLongNext() {
+    assertEquals((long)DiscreteDomain.longs().next((long)1),(long)2);
+    assertEquals((long)DiscreteDomain.longs().next((long)2),(long)3);
+    assertEquals((long)DiscreteDomain.longs().next((long)3),(long)4);
+    assertEquals((long)DiscreteDomain.longs().next((long)4),(long)5);
+    assertEquals((long)DiscreteDomain.longs().next((long)5),(long)6);
+    assertEquals((long)DiscreteDomain.longs().next((long)6),(long)7);
+    assertEquals((long)DiscreteDomain.longs().next((long)7),(long)8);
+    assertEquals((long)DiscreteDomain.longs().next((long)8),(long)9);
+    assertEquals((long)DiscreteDomain.longs().next((long)9),(long)10);
+    assertEquals((long)DiscreteDomain.longs().next((long)10),(long)11);
+  }
+
+  /**
+   * Checks if the Long next method returns an long number decremented by 1 for the numbers 1-10.
+   * Assertion is true if all 10 numbers are decremented correctly.
+   */
+  public void testLongPrevious() {
+    assertEquals((long)DiscreteDomain.longs().previous((long)1),(long)0);
+    assertEquals((long)DiscreteDomain.longs().previous((long)2),(long)1);
+    assertEquals((long)DiscreteDomain.longs().previous((long)3),(long)2);
+    assertEquals((long)DiscreteDomain.longs().previous((long)4),(long)3);
+    assertEquals((long)DiscreteDomain.longs().previous((long)5),(long)4);
+    assertEquals((long)DiscreteDomain.longs().previous((long)6),(long)5);
+    assertEquals((long)DiscreteDomain.longs().previous((long)7),(long)6);
+    assertEquals((long)DiscreteDomain.longs().previous((long)8),(long)7);
+    assertEquals((long)DiscreteDomain.longs().previous((long)9),(long)8);
+    assertEquals((long)DiscreteDomain.longs().previous((long)10),(long)9);
+  }
 }
