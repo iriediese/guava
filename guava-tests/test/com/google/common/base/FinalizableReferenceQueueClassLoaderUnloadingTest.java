@@ -212,6 +212,11 @@ public class FinalizableReferenceQueueClassLoaderUnloadingTest extends TestCase 
     }
   }
 
+  public void testDirectLoader(){
+    FinalizableReferenceQueue.DirectLoader k = new FinalizableReferenceQueue.DirectLoader();
+    assertNotNull(k.loadFinalizer());
+  }
+
   // If you have a FinalizableReferenceQueue that is a static field of one of the classes of your
   // app (like the FrqUser class above), then the app's ClassLoader will never be gc'd. The reason
   // is that we attempt to run a thread in a separate ClassLoader that will detect when the FRQ
