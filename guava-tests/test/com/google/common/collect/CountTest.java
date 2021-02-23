@@ -51,4 +51,9 @@ public class CountTest extends TestCase {
     holder.set(20);
     assertEquals(20, holder.get());
   }
+
+  public void testToString(){
+    Count count = new Count(-10);
+    assertEquals("-10", count.toString());
+  }
 }

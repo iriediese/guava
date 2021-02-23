@@ -335,6 +335,10 @@ public class BaseEncodingTest extends TestCase {
     assertSame(base16(), base16().upperCase());
   }
 
+  public void testBase16EqualsNull(){
+    assertFalse(base16().equals(null));
+  }
+
   public void testBase16InvalidDecodings() {
     // These contain bytes not in the decodabet.
     assertFailsToDecode(base16(), "\n\n", "Unrecognized character: 0xa");
