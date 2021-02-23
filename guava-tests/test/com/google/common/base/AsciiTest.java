@@ -44,6 +44,16 @@ public class AsciiTest extends TestCase {
     assertEquals("foobar", Ascii.toLowerCase("fOobaR"));
   }
 
+  public void testToLowerCaseCharSequence(){
+    CharSequence charSequence = new StringBuffer("LOweRcasETExT");
+    assertEquals("lowercasetext", Ascii.toLowerCase(charSequence));
+  }
+
+  public void testToUpperCaseCharSequence(){
+    CharSequence charSequence = new StringBuffer("UppercasEtexT");
+    assertEquals("UPPERCASETEXT", Ascii.toUpperCase(charSequence));
+  }
+
   public void testToUpperCase() {
     assertEquals(UPPER, Ascii.toUpperCase(LOWER));
     assertSame(UPPER, Ascii.toUpperCase(UPPER));
