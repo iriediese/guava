@@ -87,4 +87,44 @@ public class DiscreteDomainTest extends TestCase {
     } catch (IllegalArgumentException expected) {
     }
   }
+
+  /*
+  Additional tests to increase coverage
+   */
+
+  /**
+   * Checks if the distance functions for Longs give an accurate distance.
+   * Assertion is true if it return the distance between 0 and Long.MAX_VALUE
+   * which is Long.MAX_VALUE
+   */
+  public void testLongsDistance() {
+    assertEquals(DiscreteDomain.longs().distance((long)0, Long.MAX_VALUE), Long.MAX_VALUE);
+  }
+
+  /**
+   * Check if the minValue function for longs return a correct value.
+   * Assertion is true if it return Long.MIN_VALUE
+   */
+  public void testLongsMinValue() {
+    assertEquals((long)DiscreteDomain.longs().minValue(), Long.MIN_VALUE);
+  }
+  /**
+   * Check if the maxValue function for longs return a correct value.
+   * Assertion is true if it return Long.MAX_VALUE
+   */
+  public void testLongsMaxValue() {
+    assertEquals((long)DiscreteDomain.longs().maxValue(), Long.MAX_VALUE);
+  }
+  /**
+   * Checks if the distance functions for BigIntergers give an accurate distance.
+   * Assertion is true if it return the distance between 0 and BigInteger.valueOf(Long.MAX_VALUE)
+   * which is BigInteger.valueOf(Long.MAX_VALUE).
+   */
+  public void testBigIntegersDistance() {
+    BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
+    BigInteger ZERO = BigInteger.valueOf(0);
+    long distance = DiscreteDomain.bigIntegers().distance(ZERO, MAX_LONG);
+    BigInteger bigDist = BigInteger.valueOf(distance);
+    assertEquals(bigDist, MAX_LONG);
+  }
 }
