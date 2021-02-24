@@ -33,8 +33,25 @@ We then measured its coverage using jacoco, and results showed 89% (class), 88% 
 ## Complexity
 
 1. What are your results for five complex functions?  
-   * Did all methods (tools vs. manual count) get the same result?  
-   * No, they did not. We measured complexity using lizard, MetricsReloaded, and checkstyle, as well as manual counting. They each yielded different (yet very similar / off by 1-2) results.  
+   * Did all methods (tools vs. manual count) get the same result?
+   * With the preceding number specifying the cyclomatic complexity, the 10 high-complexity functions we have found are
+      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java
+      21    AbstractFuture<V>::get@410-509@./util/concurrent/AbstractFuture.java
+      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java
+      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java
+      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java
+      16    Murmur3_128HashFunction::Murmur3_128Hasher::processRemaining@124-166@./hash/Murmur3_128HashFunction.java
+      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java
+      12    RegularImmutableSortedSet<E>::containsAll@104-153@./RegularImmutableSortedSet.java
+      11    RegularImmutableSortedSet<E>::equals@170-204@./RegularImmutableSortedSet.java
+      12    Multisets::union@397-454@./Multisets.java
+   * Then, we calculated the coverage for the following 5:
+      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java
+      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java
+      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java
+      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java
+      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java
+   * We measured complexity using lizard, MetricsReloaded, and checkstyle, as well as manual counting. They each yielded different (yet very similar / off by 1-2) results.  
    * Are the results clear?  
    * They mostly seem accurate, yes. Even when results differ, the values are still close enough, and they also mostly followed our exepectations (when doing a manual count).  
 2. Are the functions just complex, or also long?  
