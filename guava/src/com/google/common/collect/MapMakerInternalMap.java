@@ -2785,11 +2785,13 @@ class MapMakerInternalMap<
     }
 
     @Override
+    // Not covered, requires testing.
     public int size() {
       return MapMakerInternalMap.this.size();
     }
 
     @Override
+    // Not covered, requires testing.
     public boolean isEmpty() {
       return MapMakerInternalMap.this.isEmpty();
     }

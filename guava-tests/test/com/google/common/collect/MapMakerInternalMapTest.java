@@ -50,6 +50,19 @@ public class MapMakerInternalMapTest extends TestCase {
 
   // constructor tests
 
+  public void testIsempty() {
+   MapMakerInternalMap<Object, Object, ?, ?> map = makeMap(createMapMaker());
+
+    assertTrue(map.isEmpty());
+  }
+
+  public void testSize() {
+    MapMakerInternalMap<Object, Object, ?, ?> map = makeMap(createMapMaker());
+
+    assertThat(map.size()).isEqualTo(0);
+  }
+
+
   public void testDefaults() {
     MapMakerInternalMap<Object, Object, ?, ?> map = makeMap(createMapMaker());
 
