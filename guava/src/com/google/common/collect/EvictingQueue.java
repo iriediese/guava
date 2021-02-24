@@ -126,7 +126,7 @@ public final class EvictingQueue<E> extends ForwardingQueue<E> implements Serial
   }
 
   @Override
-  public boolean contains(Object object) {
+  public boolean contains(Object object) { // not covered; needs testing
     return delegate().contains(checkNotNull(object));
   }
 
