@@ -26,6 +26,9 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.google.common.base.Stopwatch;
+
+import java.nio.file.FileSystems;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -251,6 +254,15 @@ public class QueuesTest extends TestCase {
     }
     assertEquals(1, Queues.newLinkedBlockingDeque(1).remainingCapacity());
     assertEquals(11, Queues.newLinkedBlockingDeque(11).remainingCapacity());
+  }
+
+  public void testNewLinkedBlockingQueue(){
+    List<String> list = new ArrayList<>();
+    list.add("string1");
+    list.add("string2");
+
+    assertEquals(2, Queues.newLinkedBlockingQueue(list).size());
+    assertEquals(2147483645, Queues.newLinkedBlockingQueue(FileSystems.getDefault().getFileStores()).remainingCapacity());
   }
 
   public void testNewLinkedBlockingQueueCapacity() {

@@ -428,9 +428,11 @@ public final class Ascii {
    * @since 14.0
    */
   public static String toLowerCase(CharSequence chars) {
+    // not covered by the existing test suite, requires additional testing
     if (chars instanceof String) {
       return toLowerCase((String) chars);
     }
+    // not covered by the existing test suite, requires additional testing
     char[] newChars = new char[chars.length()];
     for (int i = 0; i < newChars.length; i++) {
       newChars[i] = toLowerCase(chars.charAt(i));
@@ -476,9 +478,11 @@ public final class Ascii {
    * @since 14.0
    */
   public static String toUpperCase(CharSequence chars) {
+    // not covered by the existing test suite, requires additional testing
     if (chars instanceof String) {
       return toUpperCase((String) chars);
     }
+    // not covered by the existing test suite, requires additional testing
     char[] newChars = new char[chars.length()];
     for (int i = 0; i < newChars.length; i++) {
       newChars[i] = toUpperCase(chars.charAt(i));

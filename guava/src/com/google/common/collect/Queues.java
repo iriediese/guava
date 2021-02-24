@@ -173,9 +173,11 @@ public final class Queues {
    */
   @GwtIncompatible // LinkedBlockingQueue
   public static <E> LinkedBlockingQueue<E> newLinkedBlockingQueue(Iterable<? extends E> elements) {
+    // not covered by the existing test suite, requires additional testing
     if (elements instanceof Collection) {
       return new LinkedBlockingQueue<E>((Collection<? extends E>) elements);
     }
+    // not covered by the existing test suite, requires additional testing
     LinkedBlockingQueue<E> queue = new LinkedBlockingQueue<E>();
     Iterables.addAll(queue, elements);
     return queue;
