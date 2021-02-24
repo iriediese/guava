@@ -104,6 +104,36 @@ Fortunately, the functions we measured the coverage for all had 100% coverage, a
 
 ## Coverage improvement
 
+tedi  
+evictingqueue - contains: 0% to 100%  
+finalizablereferencequeue - cleanup: 16% to 16%  
+finalizablereferencequeue.directloader - loadfinalizer: 0% to 33%  
+count - equals: 0% to 92%  
+
+ioana  
+count - toString: 0% to 100%  
+ascii - tolowercase: 0% to 86%  
+ascii - touppercase: 0% to 86%  
+baseencoding - equals: 0% to 0%  
+
+alex  
+discretedomain.longdomain - distance: 0% to 75%  
+discretedomain.longdomain - minValue: 0% to 100%  
+discretedomain.longdomain - maxValue: 0% to 100%  
+discretedomain.bigintegerdomain - distance: 100% to 100%  
+
+johan  
+compacthashing - createtable: 43% to 43%  
+	       - tableClear: 41% to 100%  
+               - tableSize: 100% to 100%  
+	       - newCapacity: 100% to 100%  
+
+joaquin  
+longadder - reset: 0% to 100%  
+	  - add: 100% to 100%  
+	  - sum: 100% to 100%  
+	  - sumThenReset: 0% to 35%  
+
 Show the comments that describe the requirements for the coverage.
 
 Report of old coverage: [link]
