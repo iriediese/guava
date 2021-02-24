@@ -121,13 +121,13 @@ public abstract class DiscreteDomain<C extends Comparable> {
     LongDomain() {
       super(true);
     }
-
+    // Method lacks test coverage, add tests to increase coverage!
     @Override
     public Long next(Long value) {
       long l = value;
       return (l == Long.MAX_VALUE) ? null : l + 1;
     }
-
+    // Method lacks test coverage, add tests to increase coverage!
     @Override
     public Long previous(Long value) {
       long l = value;
@@ -143,7 +143,7 @@ public abstract class DiscreteDomain<C extends Comparable> {
       }
       return result;
     }
-
+    // Method lacks test coverage, add tests to increase coverage!
     @Override
     public long distance(Long start, Long end) {
       long result = end - start;
@@ -155,12 +155,12 @@ public abstract class DiscreteDomain<C extends Comparable> {
       }
       return result;
     }
-
+    // Method lacks test coverage, add tests to increase coverage!
     @Override
     public Long minValue() {
       return Long.MIN_VALUE;
     }
-
+    // Method lacks test coverage, add tests to increase coverage!
     @Override
     public Long maxValue() {
       return Long.MAX_VALUE;
