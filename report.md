@@ -34,30 +34,30 @@ We then measured its coverage using jacoco, and results showed 89% (class), 88% 
 
 1. What are your results for five complex functions?  
    * Did all methods (tools vs. manual count) get the same result?
-   * With the preceding number specifying the cyclomatic complexity, the 10 high-complexity functions we have found are
-      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java
-      21    AbstractFuture<V>::get@410-509@./util/concurrent/AbstractFuture.java
-      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java
-      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java
-      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java
-      16    Murmur3_128HashFunction::Murmur3_128Hasher::processRemaining@124-166@./hash/Murmur3_128HashFunction.java
-      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java
-      12    RegularImmutableSortedSet<E>::containsAll@104-153@./RegularImmutableSortedSet.java
-      11    RegularImmutableSortedSet<E>::equals@170-204@./RegularImmutableSortedSet.java
-      12    Multisets::union@397-454@./Multisets.java
-   * Then, we calculated the coverage for the following 5:
-      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java
-      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java
-      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java
-      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java
-      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java
+   * With the preceding number specifying the cyclomatic complexity, the 10 high-complexity functions we have found are:  
+      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java  
+      21    AbstractFuture<V>::get@410-509@./util/concurrent/AbstractFuture.java  
+      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java  
+      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java  
+      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java  
+      16    Murmur3_128HashFunction::Murmur3_128Hasher::processRemaining@124-166@./hash/Murmur3_128HashFunction.java  
+      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java  
+      12    RegularImmutableSortedSet<E>::containsAll@104-153@./RegularImmutableSortedSet.java  
+      11    RegularImmutableSortedSet<E>::equals@170-204@./RegularImmutableSortedSet.java  
+      12    Multisets::union@397-454@./Multisets.java  
+   * Then, we calculated the coverage for the following 5:  
+      21    Utf8::isWellFormedSlowPath@137-194@./base/Utf8.java  
+      23    InetAddresses::textToNumericFormatV6@232-300@./net/InetAddresses.java  
+      17    GeneralRange<T>::intersect@175-220@./collect/GeneralRange.java  
+      16    TreeMultiset<E>::AvlNode<E>::setCount@716-762@./TreeMultiset.java  
+      11    TreeMultiset<E>::AvlNode<E>::remove@665-714@./TreeMultiset.java  
    * We measured complexity using lizard, MetricsReloaded, and checkstyle, as well as manual counting. They each yielded different (yet very similar / off by 1-2) results.  
    * Are the results clear?  
    * They mostly seem accurate, yes. Even when results differ, the values are still close enough, and they also mostly followed our exepectations (when doing a manual count).  
 2. Are the functions just complex, or also long?  
    * Most of the functions that we have found to be complex, were also long (around 70 LOC). However, there were a few exceptions (roughly a fifth of those we found) that were shorter (around 40 LOC).  
 3. What is the purpose of the functions?  
-   * Utf8::isWellFormedSlowPath checks whether a byte array slice is a well-formed UTF-8 byte sequence  
+   * Utf8::isWellFormedSlowPath checks whether a byte array slice is a well-formed UTF-8 byte sequence.  
    * textToNumericFormatV6 gets a string with an IPv6 address, and then translates it to a numeric format.  
    * GeneralRange<T>::intersect returns the intersection of the two ranges, or an empty range if their intersection is empty.  
    * TreeMultiset<E>::AvlNode<E>::setCount sets the count of an element to the given value.   
@@ -72,16 +72,16 @@ We then measured its coverage using jacoco, and results showed 89% (class), 88% 
 Plan for refactoring complex code:  
 For Utf8::isWellFormedSlowPath, there is a very obvious while(true) loop that can be avoided. Additionally, some bitwise operations included within the function can be extracted into separate methods, which can then be called as part of the main body, to reduce code length and make everything more clear.  
 In textToNumericFormatV6, the procedure counting the delimiters can be split into separate methods, then called from the main one. This would reduce the cyclomatic complexity of the function itself, but would not have any other impact overall. There are no ways to improve the logic of the function that we can see.  
-In GeneralRange<T>::intersect, the checks for the lower and upper bounds can also be separated into different functions.
-Regarding TreeMultiset<E>::AvlNode<E>::setCount, it can be made iterative. This might make it a bit faster, and potentially clearer.
-Finally, TreeMultiset<E>::AvlNode<E>::remove cannot really be changed much. Some if statements could be combined to reduce the code length, but that would not improve much.
+In GeneralRange<T>::intersect, the checks for the lower and upper bounds can also be separated into different functions.  
+Regarding TreeMultiset<E>::AvlNode<E>::setCount, it can be made iterative. This might make it a bit faster, and potentially clearer.  
+Finally, TreeMultiset<E>::AvlNode<E>::remove cannot really be changed much. Some if statements could be combined to reduce the code length, but that would not improve much.  
 
-Estimated impact of refactoring (lower CC, but other drawbacks?).
-Besides lower CC, drawbacks include the possiblity that refactoring might increase coupling and complexity in other parts of the program. Additionally, refactoring takes time that is not worth spending just to optimise the project a little bit. Optimisation can also be excessive and break functionality in some cases.
+Estimated impact of refactoring (lower CC, but other drawbacks?).  
+Besides lower CC, drawbacks include the possiblity that refactoring might increase coupling and complexity in other parts of the program. Additionally, refactoring takes time that is not worth spending just to optimise the project a little bit. Optimisation can also be excessive and break functionality in some cases.  
 
-Carried out refactoring (optional, P+):
-
-git diff ...
+Carried out refactoring (optional, P+):  
+In practice, the two functions we refactored were InetAddresses::textToNumericFormatV6 from ./net/InetAddresses.java, and ToDoubleRounder::roundToDouble from ./math/ToDoubleRounder.java. We reduced the complexity for the former from 23 to 10, and from 34 to 2 for the latter. 
+They can both be found in the refactor branch.
 
 ## Coverage
 
@@ -92,20 +92,18 @@ We also used jacoco to measure coverage.
 
 How well was the tool documented? Was it possible/easy/difficult to
 integrate it with your build environment?  
-The tool was heavily documented, but we found many conflicting sources of information. We integrated the tool with maven, which led to some unpredictable issues related to how the pom.xml files were written by upstream (variable conflicts in creating logs). We figured it out after a while, and managed to measure the coverage for the whole project. The coverage results showed 89% (class), 88% (method), 88% (line), and 86% (branch).
+The tool was heavily documented, but we found many conflicting sources of information. We integrated the tool with maven, which led to some unpredictable issues related to how the pom.xml files were written by upstream (variable conflicts in creating logs). We figured it out after a while, and managed to measure the coverage for the whole project. The coverage results showed 89% (class), 88% (method), 88% (line), and 86% (branch), in the beginning.
 
 ### Your own coverage tool
 
 Show a patch (or link to a branch) that shows the instrumented code to
 gather coverage measurements.
-
-The patch is probably too long to be copied here, so please add
-the git command that is used to obtain the patch instead:
-
-git diff ...
+This can be found in the develop branch: https://github.com/iriediese/guava/commits/develop
+Together with https://github.com/iriediese/guava/commit/0787d8aec84314a2b45f277d883f4bc857d5c970 the last four pull requests show the usage of our measuring tool
 
 What kinds of constructs does your tool support, and how accurate is
-its output?
+its output?  
+Our tool uses arrays to measure the covered branches, as explained below.
 
 ### Evaluation
 
@@ -153,19 +151,17 @@ longadder - reset: 0% to 100%
 
 Show the comments that describe the requirements for the coverage.
 
-Report of old coverage: [link]
 
-Report of new coverage: [link]
+## P+ criteria:
 
-Test cases added:
-
-git diff ...
-
-Number of test cases added: two per team member (P) or at least four (P+).
+We adhere to criteria 1, 2, and 3 as specified in the assignment description.  
+Specifically, each group member wrote 4 new tests that improve coverage.  
+We used issues and systematic commit messages to manage our project.  
+We have refactored two functions, reducing their complexity by at least 35%.   
 
 ## Self-assessment: Way of working
 
-Current state according to the Essence standard: ...
+Current state according to the Essence standard:
 
 Was the self-assessment unanimous? Any doubts about certain items?
 
@@ -176,5 +172,7 @@ Where is potential for improvement?
 ## Overall experience
 
 What are your main take-aways from this project? What did you learn?
+We have learnt that projects can be very well done, sometimes allowing for little room for improvement.
 
 Is there something special you want to mention here?
+No.
