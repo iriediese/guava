@@ -65,6 +65,7 @@ final class Count implements Serializable {
 
   @Override
   public String toString() {
+    // not covered by the existing test suite, requires additional testing
     return Integer.toString(value);
   }
 }
