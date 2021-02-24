@@ -98,7 +98,7 @@ The tool was heavily documented, but we found many conflicting sources of inform
 
 Show a patch (or link to a branch) that shows the instrumented code to
 gather coverage measurements.
-This can be found in the develop branch: https://github.com/iriediese/guava/commits/develop
+This can be found in the develop branch: https://github.com/iriediese/guava/commits/develop   
 Together with https://github.com/iriediese/guava/commit/0787d8aec84314a2b45f277d883f4bc857d5c970 the last four pull requests show the usage of our measuring tool
 
 What kinds of constructs does your tool support, and how accurate is
@@ -115,41 +115,29 @@ The percentage can then be seen from the array itself.
 Our tool uses files to record intermediary coverage measurements, during the runtime of a test suite. In other words, assume test 1 is run. We record the coverage of test 1 in a file. Then, when test 2 is run, we merge its results into that same file, and so on. If tests are very long, this process might become a bit slow at times, but in our case it was quick enough. 
 
 3. Are the results of your tool consistent with existing coverage tools?
-Fortunately, the functions we measured the coverage for all had 100% coverage, according to our tool. This makes sense, since there is a very high number of tests (hundreds) that call each one as part of other tested functions. In the end, from around 20 nodes a method had, on average, they were all covered. This is, indeed, consistent with our results from jacoco. One thing to take into account is that in our project, there happened to be two types of methods: some that are fully covered, and some that are not covered at all. In terms of improvement, we naturally wrote tests for the latter.
+Fortunately, the functions we measured the coverage for all had 100% coverage, according to our tool. This makes sense, since there is a very high number of tests (hundreds) that call each one as part of other tested functions. In the end, from around 20 nodes a method had, on average, they were all covered. This is, indeed, consistent with our results from jacoco.
 
 ## Coverage improvement
 
-tedi  
-evictingqueue - contains: 0% to 100%  
-finalizablereferencequeue - cleanup: 16% to 16%  
-finalizablereferencequeue.directloader - loadfinalizer: 0% to 33%  
-count - equals: 0% to 92%  
+Theodor:  
+Functions: equals (0% to 92%), contains (0% to 100%), loadFinalizer (0% to 33%), newArrayBlockingQueue(0% to 100%).  
+Branch: https://github.com/iriediese/guava/commits/tedi_test  
 
-ioana  
-count - toString: 0% to 100%  
-ascii - tolowercase: 0% to 86%  
-ascii - touppercase: 0% to 86%  
-baseencoding - equals: 0% to 0%  
+Ioana:  
+Functions: count (0% to 100%), toString (0% to 100%), toLowerCase(0% to 100%), toUpperCase (0% to 100%), newLinkedBlockingQueue(0% to 100%)  
+Branch: https://github.com/iriediese/guava/commits/ioana_test  
 
-alex  
-discretedomain.longdomain - distance: 0% to 75%  
-discretedomain.longdomain - minValue: 0% to 100%  
-discretedomain.longdomain - maxValue: 0% to 100%  
-discretedomain.bigintegerdomain - distance: 100% to 100%  
+Alex:  
+Functions: DiscreteDomain.LongDomain::distance (0% to 75%), minValue (0% to 100%), maxValue(0% to 100%), next (0% to 100%), previous (0% to 100%)  
+Branch: https://github.com/iriediese/guava/commits/alex-additional-tests  
 
-johan  
-compacthashing - createtable: 43% to 43%  
-	       - tableClear: 41% to 100%  
-               - tableSize: 100% to 100%  
-	       - newCapacity: 100% to 100%  
+Johan:  
+Functions: createTable (43% to 100%), tableClear (41% to 100%), tableSet (41% to 100%), tableGet (39% to 100%)  
+Branch: https://github.com/iriediese/guava/commits/CompactHashing_tests  
 
-joaquin  
-longadder - reset: 0% to 100%  
-	  - add: 100% to 100%  
-	  - sum: 100% to 100%  
-	  - sumThenReset: 0% to 35%  
-
-Show the comments that describe the requirements for the coverage.
+Joaquin:   
+Functions: reset (0% to 100%), sumThenReset (0% to 35%), size (0% to 100%), isEmpty (0% to 100%)   
+Branch: https://github.com/iriediese/guava/commits/jbq_tast2  
 
 
 ## P+ criteria:
@@ -161,13 +149,24 @@ We have refactored two functions, reducing their complexity by at least 35%.
 
 ## Self-assessment: Way of working
 
+We used 2-day sprints to get functionality split, then done individually. We did this for each different part of the project. For example, the coverage tool was written in parallel by each one of us on their chosen function, and the code was peer-reviewed and merged afterwards, during a meeting. The tests were written the same way. Finally, refactoring and documentation were done over a longer time span, both individually (refactoring by Alex and Ioana, report by Theodor), and together during meetings. Overall, contribution was roughly equal, and each team member was pro-active, eager to help wherever needed. This was sometimes the case when writing tests.
+
 Current state according to the Essence standard:
+We constantly used checklists to discern what was done, in progress, or left to do
+We held meetings to split tasks, gather results, and provide help wherever necessary.
+The tasks were small, simple, and designed to achieve the highest possible impact.
+To the largest possible extent, we have tried to make use of the 7 alphas, as specified in the standard.
+For example, we fulfiled our requirements using a previously-discussed standard, so that our individual solutions worked similarly.
 
 Was the self-assessment unanimous? Any doubts about certain items?
+Yes. No doubts.
 
 How have you improved so far?
+We have gotten quicker at using git, and have also got more familiar with maven and its related unpleasantries.
 
-Where is potential for improvement?
+Where is the potential for improvement?
+Picking a project that is both good enough, and yet offers room for improvement is quite difficult.
+Furthermore, anyone would benefit from getting better at coding, regardless of their experience. 
 
 ## Overall experience
 
