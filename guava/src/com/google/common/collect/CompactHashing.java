@@ -17,6 +17,7 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtIncompatible;
+
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
 import java.util.Arrays;
@@ -71,6 +72,7 @@ final class CompactHashing {
   }
 
   /** Creates and returns a properly-sized array with the given number of buckets. */
+  // Not fully covered, need more tests! (43%)
   static Object createTable(int buckets) {
     if (buckets < 2
         || buckets > Ints.MAX_POWER_OF_TWO
@@ -86,6 +88,7 @@ final class CompactHashing {
     }
   }
 
+  // Not fully covered, need more tests! (41%)
   static void tableClear(Object table) {
     if (table instanceof byte[]) {
       Arrays.fill((byte[]) table, (byte) 0);
@@ -96,6 +99,7 @@ final class CompactHashing {
     }
   }
 
+  // Not fully covered, need more tests! (39%)
   static int tableGet(Object table, int index) {
     if (table instanceof byte[]) {
       return ((byte[]) table)[index] & BYTE_MASK; // unsigned read
@@ -106,6 +110,7 @@ final class CompactHashing {
     }
   }
 
+  // Not fully covered, need more tests! (41%)
   static void tableSet(Object table, int index, int entry) {
     if (table instanceof byte[]) {
       ((byte[]) table)[index] = (byte) entry; // unsigned write
