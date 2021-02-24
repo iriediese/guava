@@ -16,6 +16,7 @@ package com.google.common.math;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.math.MathPreconditions.checkRoundingUnnecessary;
+import static java.lang.Double.NaN;
 
 import com.google.common.annotations.GwtIncompatible;
 import java.math.RoundingMode;
@@ -41,11 +42,8 @@ abstract class ToDoubleRounder<X extends Number & Comparable<X>> {
   /** Returns a - b, guaranteed that both arguments are nonnegative. */
   abstract X minus(X a, X b);
 
-  /** Rounds {@code x} to a {@code double}. */
-  final double roundToDouble(X x, RoundingMode mode) {
-    checkNotNull(x, "x");
-    checkNotNull(mode, "mode");
-    double roundArbitrarily = roundToDoubleArbitrarily(x);
+
+  final double switch1(X x, RoundingMode mode, double roundArbitrarily){
     if (Double.isInfinite(roundArbitrarily)) {
       switch (mode) {
         case DOWN:
@@ -55,18 +53,22 @@ abstract class ToDoubleRounder<X extends Number & Comparable<X>> {
           return Double.MAX_VALUE * sign(x);
         case FLOOR:
           return (roundArbitrarily == Double.POSITIVE_INFINITY)
-              ? Double.MAX_VALUE
-              : Double.NEGATIVE_INFINITY;
+                  ? Double.MAX_VALUE
+                  : Double.NEGATIVE_INFINITY;
         case CEILING:
           return (roundArbitrarily == Double.POSITIVE_INFINITY)
-              ? Double.POSITIVE_INFINITY
-              : -Double.MAX_VALUE;
+                  ? Double.POSITIVE_INFINITY
+                  : -Double.MAX_VALUE;
         case UP:
           return roundArbitrarily;
         case UNNECESSARY:
           throw new ArithmeticException(x + " cannot be represented precisely as a double");
       }
     }
+    return NaN;
+  }
+
+  final double switch2(X x, RoundingMode mode, double roundArbitrarily){
     X roundArbitrarilyAsX = toX(roundArbitrarily, RoundingMode.UNNECESSARY);
     int cmpXToRoundArbitrarily = x.compareTo(roundArbitrarilyAsX);
     switch (mode) {
@@ -75,15 +77,15 @@ abstract class ToDoubleRounder<X extends Number & Comparable<X>> {
         return roundArbitrarily;
       case FLOOR:
         return (cmpXToRoundArbitrarily >= 0)
-            ? roundArbitrarily
-            : DoubleUtils.nextDown(roundArbitrarily);
+                ? roundArbitrarily
+                : DoubleUtils.nextDown(roundArbitrarily);
       case CEILING:
         return (cmpXToRoundArbitrarily <= 0) ? roundArbitrarily : Math.nextUp(roundArbitrarily);
       case DOWN:
         if (sign(x) >= 0) {
           return (cmpXToRoundArbitrarily >= 0)
-              ? roundArbitrarily
-              : DoubleUtils.nextDown(roundArbitrarily);
+                  ? roundArbitrarily
+                  : DoubleUtils.nextDown(roundArbitrarily);
         } else {
           return (cmpXToRoundArbitrarily <= 0) ? roundArbitrarily : Math.nextUp(roundArbitrarily);
         }
@@ -92,61 +94,74 @@ abstract class ToDoubleRounder<X extends Number & Comparable<X>> {
           return (cmpXToRoundArbitrarily <= 0) ? roundArbitrarily : Math.nextUp(roundArbitrarily);
         } else {
           return (cmpXToRoundArbitrarily >= 0)
-              ? roundArbitrarily
-              : DoubleUtils.nextDown(roundArbitrarily);
+                  ? roundArbitrarily
+                  : DoubleUtils.nextDown(roundArbitrarily);
         }
       case HALF_DOWN:
       case HALF_UP:
       case HALF_EVEN:
-        {
-          X roundFloor;
-          double roundFloorAsDouble;
-          X roundCeiling;
-          double roundCeilingAsDouble;
+      {
+        X roundFloor;
+        double roundFloorAsDouble;
+        X roundCeiling;
+        double roundCeilingAsDouble;
 
-          if (cmpXToRoundArbitrarily >= 0) {
-            roundFloorAsDouble = roundArbitrarily;
-            roundFloor = roundArbitrarilyAsX;
-            roundCeilingAsDouble = Math.nextUp(roundArbitrarily);
-            if (roundCeilingAsDouble == Double.POSITIVE_INFINITY) {
-              return roundFloorAsDouble;
-            }
-            roundCeiling = toX(roundCeilingAsDouble, RoundingMode.CEILING);
-          } else {
-            roundCeilingAsDouble = roundArbitrarily;
-            roundCeiling = roundArbitrarilyAsX;
-            roundFloorAsDouble = DoubleUtils.nextDown(roundArbitrarily);
-            if (roundFloorAsDouble == Double.NEGATIVE_INFINITY) {
-              return roundCeilingAsDouble;
-            }
-            roundFloor = toX(roundFloorAsDouble, RoundingMode.FLOOR);
-          }
-
-          X deltaToFloor = minus(x, roundFloor);
-          X deltaToCeiling = minus(roundCeiling, x);
-          int diff = deltaToFloor.compareTo(deltaToCeiling);
-          if (diff < 0) { // closer to floor
+        if (cmpXToRoundArbitrarily >= 0) {
+          roundFloorAsDouble = roundArbitrarily;
+          roundFloor = roundArbitrarilyAsX;
+          roundCeilingAsDouble = Math.nextUp(roundArbitrarily);
+          if (roundCeilingAsDouble == Double.POSITIVE_INFINITY) {
             return roundFloorAsDouble;
-          } else if (diff > 0) { // closer to ceiling
+          }
+          roundCeiling = toX(roundCeilingAsDouble, RoundingMode.CEILING);
+        } else {
+          roundCeilingAsDouble = roundArbitrarily;
+          roundCeiling = roundArbitrarilyAsX;
+          roundFloorAsDouble = DoubleUtils.nextDown(roundArbitrarily);
+          if (roundFloorAsDouble == Double.NEGATIVE_INFINITY) {
             return roundCeilingAsDouble;
           }
-          // halfway between the representable values; do the half-whatever logic
-          switch (mode) {
-            case HALF_EVEN:
-              // roundFloorAsDouble and roundCeilingAsDouble are neighbors, so precisely
-              // one of them should have an even long representation
-              return ((Double.doubleToRawLongBits(roundFloorAsDouble) & 1L) == 0)
-                  ? roundFloorAsDouble
-                  : roundCeilingAsDouble;
-            case HALF_DOWN:
-              return (sign(x) >= 0) ? roundFloorAsDouble : roundCeilingAsDouble;
-            case HALF_UP:
-              return (sign(x) >= 0) ? roundCeilingAsDouble : roundFloorAsDouble;
-            default:
-              throw new AssertionError("impossible");
-          }
+          roundFloor = toX(roundFloorAsDouble, RoundingMode.FLOOR);
         }
+
+        X deltaToFloor = minus(x, roundFloor);
+        X deltaToCeiling = minus(roundCeiling, x);
+        int diff = deltaToFloor.compareTo(deltaToCeiling);
+        if (diff < 0) { // closer to floor
+          return roundFloorAsDouble;
+        } else if (diff > 0) { // closer to ceiling
+          return roundCeilingAsDouble;
+        }
+        // halfway between the representable values; do the half-whatever logic
+        switch (mode) {
+          case HALF_EVEN:
+            // roundFloorAsDouble and roundCeilingAsDouble are neighbors, so precisely
+            // one of them should have an even long representation
+            return ((Double.doubleToRawLongBits(roundFloorAsDouble) & 1L) == 0)
+                    ? roundFloorAsDouble
+                    : roundCeilingAsDouble;
+          case HALF_DOWN:
+            return (sign(x) >= 0) ? roundFloorAsDouble : roundCeilingAsDouble;
+          case HALF_UP:
+            return (sign(x) >= 0) ? roundCeilingAsDouble : roundFloorAsDouble;
+          default:
+            throw new AssertionError("impossible");
+        }
+      }
     }
-    throw new AssertionError("impossible");
+    return NaN;
+  }
+
+  /** Rounds {@code x} to a {@code double}. */
+  final double roundToDouble(X x, RoundingMode mode) {
+    checkNotNull(x, "x");
+    checkNotNull(mode, "mode");
+    double roundArbitrarily = roundToDoubleArbitrarily(x);
+    double switch1Result = switch1(x,mode, roundArbitrarily);
+    if (!Double.isNaN(switch1Result)){
+      return switch1Result;
+    }else{
+      return switch2(x,mode,roundArbitrarily);
+    }
   }
 }
