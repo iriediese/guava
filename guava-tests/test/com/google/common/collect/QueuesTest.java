@@ -171,6 +171,10 @@ public class QueuesTest extends TestCase {
     }
   }
 
+  public void testNewArrayBlockingQueue() {
+    testEmpty(Queues.newArrayBlockingQueue(1));
+  }
+
   private void testEmpty(BlockingQueue<Object> q) {
     assertDrained(q);
   }

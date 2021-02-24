@@ -184,11 +184,11 @@ public class FinalizableReferenceQueue implements Closeable {
    * FinalizableReference#finalizeReferent()} on them until the queue is empty. This method is a
    * no-op if the background thread was created successfully.
    */
-  void cleanUp() {
+  void cleanUp() { // not fully covered; needs testing
     if (threadStarted) {
       return;
     }
-
+    // coverage missing from here onwards
     Reference<?> reference;
     while ((reference = queue.poll()) != null) {
       /*
@@ -210,6 +210,7 @@ public class FinalizableReferenceQueue implements Closeable {
    * @return Finalizer.class
    */
   private static Class<?> loadFinalizer(FinalizerLoader... loaders) {
+    // not covered; needs testing
     for (FinalizerLoader loader : loaders) {
       Class<?> finalizer = loader.loadFinalizer();
       if (finalizer != null) {

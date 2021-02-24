@@ -52,6 +52,7 @@ public final class Queues {
    */
   @GwtIncompatible // ArrayBlockingQueue
   public static <E> ArrayBlockingQueue<E> newArrayBlockingQueue(int capacity) {
+    // not covered; needs testing
     return new ArrayBlockingQueue<E>(capacity);
   }
 
