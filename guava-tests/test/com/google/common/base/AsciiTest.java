@@ -50,7 +50,8 @@ public class AsciiTest extends TestCase {
   }
 
   public void testToLowerCaseCharSequenceStringBased(){
-    assertEquals("lowercasetext", Ascii.toLowerCase("LOweRcasETExT"));
+    CharSequence charSequence = "LOweRcasETExT";
+    assertEquals("lowercasetext", Ascii.toLowerCase(charSequence));
   }
 
   public void testToUpperCaseCharSequence(){
@@ -59,7 +60,8 @@ public class AsciiTest extends TestCase {
   }
 
   public void testToUpperCaseCharSequenceStringBased(){
-    assertEquals("UPPERCASETEXT", Ascii.toUpperCase("UppercasEtexT"));
+    CharSequence charSequence = "UppercasEtexT";
+    assertEquals("UPPERCASETEXT", Ascii.toUpperCase(charSequence));
   }
 
   public void testToUpperCase() {
